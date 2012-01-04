@@ -10,6 +10,7 @@ data HXournalIDMapClient = Create { config :: FilePath, modulename :: String }
                   | Put    { config :: FilePath, name :: FilePath, modulename :: String } 
                   | Delete { config :: FilePath, name :: String } 
                   | GetList { config :: FilePath } 
+                  | CreateWithFile { config :: FilePath, filename :: FilePath } 
               deriving (Show,Data,Typeable)
 
 create :: HXournalIDMapClient
@@ -36,5 +37,10 @@ delete = Delete { config = "test.conf"
 getlist :: HXournalIDMapClient 
 getlist = GetList { config = "test.conf" } 
 
-mode = modes [ create, get, put, delete, getlist ]
+createwithfile :: HXournalIDMapClient 
+createwithfile = CreateWithFile { config = "test.conf"
+                                , filename = "" &= typ "FILENAME" &= argPos 0 } 
+
+
+mode = modes [ create, get, put, delete, getlist, createwithfile ]
 

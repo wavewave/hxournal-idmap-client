@@ -16,6 +16,9 @@ import Network.HTTP.Enumerator
 
 import System.Directory 
 import System.FilePath
+import System.Posix.Files 
+
+
 import Unsafe.Coerce
 
 import Database.HXournal.IDMap.Client.Config
@@ -24,6 +27,10 @@ import Data.UUID
 import Data.UUID.V5
 import qualified Data.ByteString as B
 import Data.Time.Clock
+import Data.Time.Clock.POSIX
+
+import Database.HXournal.Store.Config
+import Database.HXournal.Store.Job
 
 type Url = String 
 
@@ -33,14 +40,46 @@ nextUUID mc = do
   t <- getCurrentTime 
   return . generateNamed namespaceURL . B.unpack . SC.pack $ c ++ "/" ++ show t 
 
-startCreate :: HXournalIDMapClientConfiguration -> String -> IO () 
-startCreate mc name = do 
+startCreateWithFile :: HXournalIDMapClientConfiguration 
+                    -> FilePath
+                    -> IO () 
+startCreateWithFile mc fname = do 
+  cwd <- getCurrentDirectory
+  let url = hxournalIDMapServerURL mc 
+  uuid <- nextUUID mc
+  b <- doesFileExist fname 
+  if not b 
+    then error "no such file"
+    else do
+      fstatus <- getFileStatus fname  
+      let etime = modificationTime fstatus 
+          utctime = posixSecondsToUTCTime (realToFrac etime)
+      let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid 
+                                   , hxournal_idmap_name = fname 
+                                   , hxournal_idmap_creationtime = utctime
+                                   } 
+      response <- hxournalIDMapToServer url ("uploadhxournalidmap") methodPost info
+      putStrLn $ show response 
+       
+      startAdd (toString uuid) (cwd </> fname )
+
+
+
+startCreate :: HXournalIDMapClientConfiguration 
+            -> String 
+            -> Maybe UTCTime 
+            -> IO () 
+startCreate mc name mctime = do 
   putStrLn "job started"
   cwd <- getCurrentDirectory
   let url = hxournalIDMapServerURL mc 
   uuid <- nextUUID mc
-  let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid , hxournal_idmap_name = name } 
-  response <- hxournalIDMapToServer url ("uploadhxournalIDMap") methodPost info
+  ctime <- maybe getCurrentTime return mctime  
+  let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid 
+                               , hxournal_idmap_name = name 
+                               , hxournal_idmap_creationtime = ctime
+                               } 
+  response <- hxournalIDMapToServer url ("uploadhxournalidmap") methodPost info
   putStrLn $ show response 
 
 
@@ -48,10 +87,10 @@ startGet :: HXournalIDMapClientConfiguration -> String -> IO ()
 startGet mc idee = do 
   putStrLn $"get " ++ idee
   let url = hxournalIDMapServerURL mc 
-  r <- jsonFromServer url ("hxournalIDMap" </> idee) methodGet
+  r <- jsonFromServer url ("hxournalidmap" </> idee) methodGet
   putStrLn $ show r 
 
-
+{-
 startPut :: HXournalIDMapClientConfiguration 
          -> String  -- ^ hxournalIDMap idee
          -> String  -- ^ hxournalIDMap name 
@@ -62,7 +101,10 @@ startPut mc idee name = do
   let url = hxournalIDMapServerURL mc 
       info = case fromString idee of 
                Nothing -> error "strange in startPut" 
-               Just idee' -> HXournalIDMapInfo { hxournal_idmap_uuid = idee', hxournal_idmap_name = name }
+               Just idee' -> 
+                 HXournalIDMapInfo { hxournal_idmap_uuid = idee'
+                                   , hxournal_idmap_name = name 
+                                   }
   response <- hxournalIDMapToServer url ("hxournalidmap" </> idee) methodPut info
   putStrLn $ show response 
 
@@ -73,7 +115,7 @@ startDelete mc idee = do
   let url = hxournalIDMapServerURL mc 
   r <- jsonFromServer url ("hxournalidmap" </> idee) methodDelete
   putStrLn $ show r 
-
+-}
 
 startGetList :: HXournalIDMapClientConfiguration -> IO () 
 startGetList mc = do 
@@ -105,6 +147,7 @@ hxournalIDMapToServer url api mthd mi = do
           { method = mthd
           , requestHeaders = [ ("Accept", "application/json; charset=utf-8") ]
           , requestBody = myrequestbody } 
+    putStrLn $ show mijson
     r <- httpLbs requestjson manager 
     if statusCode r == 200 
       then return . parseJson . SC.concat . C.toChunks . responseBody $ r

@@ -1,5 +1,5 @@
 Name:		hxournal-idmap-client
-Version:	0.0
+Version:	0.0.999
 Synopsis:	client program that communicates with model-server
 Description: 	client program that communicates with model-server
 License: 	BSD3
@@ -32,7 +32,7 @@ Library
                    directory == 1.1.*, 
                    filepath == 1.2.*,
                    cmdargs == 0.9.*, 
-                   hxournal-idmap-type == 0.0.*,
+                   hxournal-idmap-type >= 0.0.999 && < 0.2,
                    configurator == 0.2.*,
                    bytestring == 0.9.*, 
                    http-enumerator == 0.7.*, 
@@ -40,7 +40,9 @@ Library
                    aeson == 0.4.*,
                    attoparsec == 0.10.*, 
                    time == 1.2.*, 
-                   uuid == 1.2.*
+                   uuid == 1.2.*, 
+                   hxournal-store == 0.0.*, 
+                   unix == 2.4.*
 
   Exposed-Modules: 
                    Database.HXournal.IDMap.Client.ProgType
