@@ -27,59 +27,59 @@ import Data.Time.Clock
 
 type Url = String 
 
-nextUUID :: Hxournal-idmapClientConfiguration -> IO UUID
+nextUUID :: HXournalIDMapClientConfiguration -> IO UUID
 nextUUID mc = do 
-  let c = hxournal-idmapClientURL mc 
+  let c = hxournalIDMapClientURL mc 
   t <- getCurrentTime 
   return . generateNamed namespaceURL . B.unpack . SC.pack $ c ++ "/" ++ show t 
 
-startCreate :: Hxournal-idmapClientConfiguration -> String -> IO () 
+startCreate :: HXournalIDMapClientConfiguration -> String -> IO () 
 startCreate mc name = do 
   putStrLn "job started"
   cwd <- getCurrentDirectory
-  let url = hxournal-idmapServerURL mc 
+  let url = hxournalIDMapServerURL mc 
   uuid <- nextUUID mc
-  let info = Hxournal-idmapInfo { hxournal-idmap_uuid = uuid , hxournal-idmap_name = name } 
-  response <- hxournal-idmapToServer url ("uploadhxournal-idmap") methodPost info
+  let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid , hxournal_idmap_name = name } 
+  response <- hxournalIDMapToServer url ("uploadhxournalIDMap") methodPost info
   putStrLn $ show response 
 
 
-startGet :: Hxournal-idmapClientConfiguration -> String -> IO () 
+startGet :: HXournalIDMapClientConfiguration -> String -> IO () 
 startGet mc idee = do 
   putStrLn $"get " ++ idee
-  let url = hxournal-idmapServerURL mc 
-  r <- jsonFromServer url ("hxournal-idmap" </> idee) methodGet
+  let url = hxournalIDMapServerURL mc 
+  r <- jsonFromServer url ("hxournalIDMap" </> idee) methodGet
   putStrLn $ show r 
 
 
-startPut :: Hxournal-idmapClientConfiguration 
-         -> String  -- ^ hxournal-idmap idee
-         -> String  -- ^ hxournal-idmap name 
+startPut :: HXournalIDMapClientConfiguration 
+         -> String  -- ^ hxournalIDMap idee
+         -> String  -- ^ hxournalIDMap name 
          -> IO () 
 startPut mc idee name = do 
   putStrLn "job started"
   cwd <- getCurrentDirectory
-  let url = hxournal-idmapServerURL mc 
+  let url = hxournalIDMapServerURL mc 
       info = case fromString idee of 
                Nothing -> error "strange in startPut" 
-               Just idee' -> Hxournal-idmapInfo { hxournal-idmap_uuid = idee', hxournal-idmap_name = name }
-  response <- hxournal-idmapToServer url ("hxournal-idmap" </> idee) methodPut info
+               Just idee' -> HXournalIDMapInfo { hxournal_idmap_uuid = idee', hxournal_idmap_name = name }
+  response <- hxournalIDMapToServer url ("hxournalidmap" </> idee) methodPut info
   putStrLn $ show response 
 
 
-startDelete :: Hxournal-idmapClientConfiguration -> String -> IO () 
+startDelete :: HXournalIDMapClientConfiguration -> String -> IO () 
 startDelete mc idee = do 
   putStrLn "job started"
-  let url = hxournal-idmapServerURL mc 
-  r <- jsonFromServer url ("hxournal-idmap" </> idee) methodDelete
+  let url = hxournalIDMapServerURL mc 
+  r <- jsonFromServer url ("hxournalidmap" </> idee) methodDelete
   putStrLn $ show r 
 
 
-startGetList :: Hxournal-idmapClientConfiguration -> IO () 
+startGetList :: HXournalIDMapClientConfiguration -> IO () 
 startGetList mc = do 
   putStrLn "getlist: "
-  let url = hxournal-idmapServerURL mc 
-  r <- jsonFromServer url ("listhxournal-idmap") methodGet
+  let url = hxournalIDMapServerURL mc 
+  r <- jsonFromServer url ("listhxournalidmap") methodGet
   putStrLn $ show r 
 
 
@@ -95,8 +95,8 @@ jsonFromServer url api mthd = do
       then return . parseJson . SC.concat . C.toChunks . responseBody $ r
       else return (Left $ "status code : " ++ show (statusCode r)) 
 
-hxournal-idmapToServer :: Url -> String -> Method -> Hxournal-idmapInfo -> IO (Either String (Result Value))
-hxournal-idmapToServer url api mthd mi = do 
+hxournalIDMapToServer :: Url -> String -> Method -> HXournalIDMapInfo -> IO (Either String (Result Value))
+hxournalIDMapToServer url api mthd mi = do 
   request <- parseUrl (url </> api)
   withManager $ \manager -> do
     let mijson = E.encode (toJSON mi)
