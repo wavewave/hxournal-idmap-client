@@ -51,20 +51,19 @@ startCreateWithFile mc fname = do
   if not b 
     then error "no such file"
     else do
+      npages <- startAdd (toString uuid) (cwd </> fname )
       fstatus <- getFileStatus fname  
       let etime = modificationTime fstatus 
           utctime = posixSecondsToUTCTime (realToFrac etime)
       let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid 
                                    , hxournal_idmap_name = fname 
                                    , hxournal_idmap_creationtime = utctime
+                                   , hxournal_idmap_numofpages = npages 
                                    } 
       response <- hxournalIDMapToServer url ("uploadhxournalidmap") methodPost info
       putStrLn $ show response 
-       
-      startAdd (toString uuid) (cwd </> fname )
 
-
-
+{-
 startCreate :: HXournalIDMapClientConfiguration 
             -> String 
             -> Maybe UTCTime 
@@ -81,7 +80,7 @@ startCreate mc name mctime = do
                                } 
   response <- hxournalIDMapToServer url ("uploadhxournalidmap") methodPost info
   putStrLn $ show response 
-
+-}
 
 startGet :: HXournalIDMapClientConfiguration -> String -> IO () 
 startGet mc idee = do 
@@ -123,6 +122,14 @@ startGetList mc = do
   let url = hxournalIDMapServerURL mc 
   r <- jsonFromServer url ("listhxournalidmap") methodGet
   putStrLn $ show r 
+
+startGetListWithTime :: HXournalIDMapClientConfiguration -> String -> String -> IO ()
+startGetListWithTime mc t1 t2 = do 
+  putStrLn "getlistwithtime"
+  let url = hxournalIDMapServerURL mc 
+  r <- jsonFromServer url ("listhxournalidmap" </> t1 </> t2) methodGet
+  putStrLn $ show r 
+  
 
 
 jsonFromServer :: Url -> String -> Method -> IO (Either String (Result Value))

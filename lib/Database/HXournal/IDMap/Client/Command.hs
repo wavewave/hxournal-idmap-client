@@ -6,10 +6,12 @@ import Database.HXournal.IDMap.Client.Config
 import Data.Configurator
 
 commandLineProcess :: HXournalIDMapClient -> IO ()
+{-
 commandLineProcess (Create cfg mn) = do 
   putStrLn "create called"
   mc <- getHXournalIDMapClientConfiguration =<< load [Required cfg] 
   maybe (error "cannot parse config") (\x -> startCreate x mn Nothing) mc
+-}
 commandLineProcess (Get cfg n) = do 
   putStrLn "get called"
   mc <- getHXournalIDMapClientConfiguration =<< load [Required cfg] 
@@ -32,3 +34,7 @@ commandLineProcess (CreateWithFile cfg fn) = do
   putStrLn "create called"
   mc <- getHXournalIDMapClientConfiguration =<< load [Required cfg] 
   maybe (error "cannot parse config") (\x -> startCreateWithFile x fn) mc
+commandLineProcess (GetListWithTime cfg t1 t2) = do 
+  putStrLn "getlist called"
+  mc <- getHXournalIDMapClientConfiguration =<< load [Required cfg] 
+  maybe (error "cannot parse config") (\x -> startGetListWithTime x t1 t2) mc
