@@ -43,21 +43,23 @@ nextUUID mc = do
 startCreateWithFile :: HXournalIDMapClientConfiguration 
                     -> FilePath
                     -> IO () 
-startCreateWithFile mc fname = do 
+startCreateWithFile mc fname' = do 
   cwd <- getCurrentDirectory
+  let fname = cwd </> fname'
   let url = hxournalIDMapServerURL mc 
   uuid <- nextUUID mc
   b <- doesFileExist fname 
   if not b 
     then error "no such file"
     else do
-      npages <- startAdd (toString uuid) (cwd </> fname )
+      npages <- startAdd (toString uuid) fname 
       fstatus <- getFileStatus fname  
       let etime = modificationTime fstatus 
           utctime = posixSecondsToUTCTime (realToFrac etime)
       let info = HXournalIDMapInfo { hxournal_idmap_uuid = uuid 
                                    , hxournal_idmap_name = fname 
                                    , hxournal_idmap_creationtime = utctime
+                                   , hxournal_idmap_currentversion = 0
                                    , hxournal_idmap_numofpages = npages 
                                    } 
       response <- hxournalIDMapToServer url ("uploadhxournalidmap") methodPost info

@@ -41,7 +41,7 @@ Library
                    attoparsec == 0.10.*, 
                    time == 1.2.*, 
                    uuid == 1.2.*, 
-                   hxournal-store == 0.0.*, 
+                   hxournal-store >= 0.1.0.999 && < 0.2, 
                    unix == 2.4.*
 
   Exposed-Modules: 
