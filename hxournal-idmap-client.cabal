@@ -49,6 +49,7 @@ Library
                    Database.HXournal.IDMap.Client.Job
                    Database.HXournal.IDMap.Client.Config
                    Database.HXournal.IDMap.Client.Command
+                   Database.HXournal.IDMap.Client.Communication.Common
   Other-Modules: 
 
  

@@ -1,5 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-----------------------------------------------------------------------------
+-- |
+-- Module      : Database.HXournal.IDMap.Client.Config
+-- Copyright   : (c) 2012 Ian-Woo Kim
+--
+-- License     : BSD3
+-- Maintainer  : Ian-Woo Kim <ianwookim@gmail.com>
+-- Stability   : experimental
+-- Portability : GHC
+--
+-----------------------------------------------------------------------------
+
 module Database.HXournal.IDMap.Client.Config where
 
 import Control.Applicative
