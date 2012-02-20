@@ -42,7 +42,9 @@ Library
                    time == 1.2.*, 
                    uuid == 1.2.*, 
                    hxournal-store >= 0.1.0.999 && < 0.2, 
-                   unix == 2.4.*
+                   unix == 2.4.*, 
+                   blaze-builder, 
+                   process
 
   Exposed-Modules: 
                    Database.HXournal.IDMap.Client.ProgType
@@ -50,6 +52,7 @@ Library
                    Database.HXournal.IDMap.Client.Config
                    Database.HXournal.IDMap.Client.Command
                    Database.HXournal.IDMap.Client.Communication.Common
+                   Database.HXournal.IDMap.Client.Communication.Multipart
   Other-Modules: 
 
  

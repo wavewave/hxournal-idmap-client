@@ -20,11 +20,13 @@ import Data.Configurator.Types
 
 data HXournalIDMapClientConfiguration = HXournalIDMapClientConfiguration { 
   hxournalIDMapServerURL :: String,
-  hxournalIDMapClientURL :: String
+  hxournalIDMapClientURL :: String, 
+  hxournalIDMapCurlPath :: FilePath
 } deriving (Show)
 
 getHXournalIDMapClientConfiguration :: Config -> IO (Maybe HXournalIDMapClientConfiguration)
 getHXournalIDMapClientConfiguration config = do  
   s <- C.lookup config "server" 
   c <- C.lookup config "client" 
-  return  (HXournalIDMapClientConfiguration  <$> s <*> c )
+  curl <- C.lookup config "curl"
+  return  (HXournalIDMapClientConfiguration  <$> s <*> c <*> curl )

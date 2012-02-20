@@ -5,7 +5,8 @@ module Database.HXournal.IDMap.Client.ProgType where
 import System.FilePath
 import System.Console.CmdArgs hiding (name)
 
-data HXournalIDMapClient = Test { config :: FilePath } 
+data HXournalIDMapClient = 
+                    Test { config :: FilePath } 
                   | Create { config :: FilePath, modulename :: String }
                   | Get    { config :: FilePath, name :: String } 
                   | Put    { config :: FilePath, name :: FilePath, modulename :: String } 
@@ -14,6 +15,7 @@ data HXournalIDMapClient = Test { config :: FilePath }
                   | CreateWithFile { config :: FilePath, filename :: FilePath } 
                   | GetListWithTime { config :: FilePath, time1 :: String, time2 :: String }  
               deriving (Show,Data,Typeable)
+
 
 -- | 
 
