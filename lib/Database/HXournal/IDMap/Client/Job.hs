@@ -96,7 +96,7 @@ createWithFile mc fname = do
   let url = hxournalIDMapServerURL mc 
       curl = hxournalIDMapCurlPath mc
 
-  r <- curlFilePost mc "test" fname 
+  r <- curlFilePost mc "uploadhxournalfile" fname 
 
   putStrLn (show r )
 
